@@ -1,0 +1,175 @@
+import 'package:flutter/material.dart';
+import '../../theme/theme.dart';
+
+class NameEntryScreen extends StatefulWidget {
+  final void Function(String name) onContinue;
+  final VoidCallback onBack;
+
+  const NameEntryScreen({super.key, required this.onContinue, required this.onBack});
+
+  @override
+  State<NameEntryScreen> createState() => _NameEntryScreenState();
+}
+
+class _NameEntryScreenState extends State<NameEntryScreen> {
+  final _nameController = TextEditingController();
+  final _focusNode = FocusNode();
+  bool _isFocused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController.addListener(() => setState(() {}));
+    _focusNode.addListener(() => setState(() => _isFocused = _focusNode.hasFocus));
+    WidgetsBinding.instance.addPostFrameCallback((_) => _focusNode.requestFocus());
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  bool get _canContinue => _nameController.text.trim().isNotEmpty;
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomPad = MediaQuery.of(context).viewInsets.bottom;
+
+    return Scaffold(
+      backgroundColor: CaddieColors.authBg,
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ── Back button
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+              child: GestureDetector(
+                onTap: widget.onBack,
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.chevron_left,
+                    color: CaddieColors.authTitle,
+                    size: 22,
+                  ),
+                ),
+              ),
+            ),
+
+            const Spacer(),
+
+            // ── Title centered
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24),
+              child: Center(
+                child: Text(
+                  'Tell us your name',
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w700,
+                    color: CaddieColors.authTitle,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 32),
+
+            // ── Name text field
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 150),
+                height: 60,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: _isFocused
+                        ? CaddieColors.btnGradientBottom
+                        : CaddieColors.authInputBorder,
+                    width: _isFocused ? 2 : 1.5,
+                  ),
+                ),
+                child: TextField(
+                  controller: _nameController,
+                  focusNode: _focusNode,
+                  textCapitalization: TextCapitalization.words,
+                  autocorrect: false,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    color: CaddieColors.authTitle,
+                  ),
+                  decoration: const InputDecoration(
+                    hintText: 'Enter your full name',
+                    hintStyle: TextStyle(
+                      fontSize: 18,
+                      color: Color(0x4D001510),
+                    ),
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                  ),
+                ),
+              ),
+            ),
+
+            const Spacer(),
+
+            // ── Continue button pinned above keyboard
+            Padding(
+              padding: EdgeInsets.only(
+                left: 24,
+                right: 24,
+                bottom: bottomPad > 0 ? bottomPad + 12 : 40,
+                top: 12,
+              ),
+              child: GestureDetector(
+                onTap: _canContinue
+                    ? () {
+                        _focusNode.unfocus();
+                        widget.onContinue(_nameController.text);
+                      }
+                    : null,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 150),
+                  height: 54,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        CaddieColors.btnGradientTop.withAlpha(_canContinue ? 255 : 102),
+                        CaddieColors.btnGradientBottom.withAlpha(_canContinue ? 255 : 102),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(CaddieRadius.button),
+                    border: Border.all(
+                      color: CaddieColors.btnBorder.withAlpha(_canContinue ? 255 : 102),
+                    ),
+                  ),
+                  alignment: Alignment.center,
+                  child: const Text(
+                    'Continue',
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
