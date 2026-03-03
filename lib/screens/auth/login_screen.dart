@@ -112,7 +112,9 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
 
             // ── White card content
-            Container(
+            Transform.translate(
+              offset: const Offset(0, -24),
+              child: Container(
               width: size.width,
               decoration: const BoxDecoration(
                 color: Colors.white,
@@ -120,7 +122,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   top: Radius.circular(CaddieRadius.card),
                 ),
               ),
-              margin: const EdgeInsets.only(top: -20),
               padding: const EdgeInsets.fromLTRB(24, 28, 24, 40),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -319,6 +320,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
               ),
             ),
+            ), // Transform.translate
           ],
         ),
       ),
