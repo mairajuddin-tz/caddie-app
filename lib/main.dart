@@ -5,6 +5,7 @@ import 'screens/onboarding/onboarding_screen.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/auth/otp_screen.dart';
 import 'screens/auth/name_entry_screen.dart';
+import 'screens/home/home_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,16 +29,18 @@ class CaddieApp extends StatelessWidget {
 
 // ── App navigation state
 
-enum _Screen { splash, onboarding, login, otp, nameEntry }
+enum _Screen { splash, onboarding, login, otp, nameEntry, home }
 
 class _RootViewState extends State<_RootView> {
   _Screen _screen = _Screen.splash;
   String _phone = '';
+  String _name = '';
 
-  void _navigate(_Screen next, {String phone = ''}) {
+  void _navigate(_Screen next, {String phone = '', String name = ''}) {
     setState(() {
       _screen = next;
       if (phone.isNotEmpty) _phone = phone;
+      if (name.isNotEmpty) _name = name;
     });
   }
 
@@ -95,8 +98,14 @@ class _RootViewState extends State<_RootView> {
       case _Screen.nameEntry:
         return NameEntryScreen(
           key: const ValueKey('nameEntry'),
-          onContinue: (_) { /* TODO: navigate to main app */ },
+          onContinue: (name) => _navigate(_Screen.home, name: name),
           onBack: () => _navigate(_Screen.otp),
+        );
+      case _Screen.home:
+        return HomeScreen(
+          key: const ValueKey('home'),
+          isFirstTimeUser: true,
+          userName: _name.isEmpty ? 'Golfer' : _name,
         );
     }
   }
